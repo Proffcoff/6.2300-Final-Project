@@ -27,6 +27,8 @@ def extrapolatetodc(f,s):
     points"""
     fwithDC = np.insert(f,0,0)
     swithDC = np.insert(s,0,0)
+    print(len(f))
+    print(len(s))
     phase = scipy.interpolate.interp1d(f, np.unwrap(np.angle(s)), axis=0,
     fill_value='extrapolate')(0)
     magnitude = scipy.interpolate.interp1d(f, np.abs(s), axis=0,

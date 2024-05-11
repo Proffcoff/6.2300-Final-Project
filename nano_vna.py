@@ -1,6 +1,7 @@
 # import the modules
 import matplotlib.pyplot as plt
 import skrf
+import numpy as np
 from scipy import signal
 from skrf.vi.vna import nanovna
 from skrf.calibration import OnePort
@@ -40,5 +41,17 @@ s11, _ = instr.get_s11_s21()
 s11_cal = cal.apply_cal(s11)
 
 # plot calibrated s11 in time domain
-data_plot, _ = measureTDR(s11_cal, instr.freq_step)
-plt.plot(data_plot)
+f = np.array([(instr.freq_start + i*instr.freq_step) for i in range(instr.npoints)])  # all measurement frequencies
+t, tdstep = measureTDR(s11_cal.s[:,0,0], f)
+plt.plot(t*1e9, np.real(tdstep))
+
+x_data, y_data = ripData()
+peak_inds, _ = signal.find_peaks(y_data, height=-10)
+peak_vals = [y_data[ind] for ind in peak_inds]
+print(f"peak inds: {peak_inds}\npeak data: {peak_vals}")
+
+plt.plot(t*1e9, np.imag(tdstep))
+plt.xlabel("Time")
+plt.ylabel("dB")
+
+plt.show()
