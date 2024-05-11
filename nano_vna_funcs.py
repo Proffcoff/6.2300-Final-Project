@@ -1,7 +1,15 @@
 # import the modules
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy
 from serial.tools import list_ports
+
+def ripData():
+    # Returns (x_data, y_data) of the function currently plotted in pyplot
+    plot = (plt.gca()).lines[0]
+    x_data = plot.get_data()[0]
+    y_data = plot.get_data()[1]
+    return x_data, y_data
 
 # Get nanovna device automatically
 # https://github.com/nanovna-v2/NanoVNA2-firmware/blob/master/python/nanovna.py
