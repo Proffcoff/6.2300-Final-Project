@@ -27,8 +27,6 @@ def extrapolatetodc(f,s):
     points"""
     fwithDC = np.insert(f,0,0)
     swithDC = np.insert(s,0,0)
-    print(len(f))
-    print(len(s))
     phase = scipy.interpolate.interp1d(f, np.unwrap(np.angle(s)), axis=0,
     fill_value='extrapolate')(0)
     magnitude = scipy.interpolate.interp1d(f, np.abs(s), axis=0,
@@ -80,9 +78,9 @@ def calculateTDR(f,s,mode='lowpass_step',window='normal',electrical_delay=0.0):
     #take the cumulative sum to simulate the step response (rather than the impulse response)
     if mode == 'lowpass_step':
         td = np.cumsum(td)
-        #calculate the time axis
-        tmax = 1 / (f[1] - f[0])
-        t = np.linspace(0, tmax, len(td))
+    #calculate the time axis
+    tmax = 1 / (f[1] - f[0])
+    t = np.linspace(0, tmax, len(td))
     return t,td
 
 def measureTDR(s11, f, mode='lowpass_step',window='normal',electrical_delay=0.0):

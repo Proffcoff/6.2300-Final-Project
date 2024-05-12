@@ -42,7 +42,7 @@ s11_cal = cal.apply_cal(s11)
 
 # plot calibrated s11 in time domain
 f = np.array([(instr.freq_start + i*instr.freq_step) for i in range(instr.npoints)])  # all measurement frequencies
-t, tdstep = measureTDR(s11_cal.s[:,0,0], f)
+t, tdstep = measureTDR(s11_cal.s[:,0,0], f, mode='bandpass_impulse')
 plt.plot(t*1e9, np.real(tdstep))
 
 x_data, y_data = ripData()
@@ -51,7 +51,7 @@ peak_vals = [y_data[ind] for ind in peak_inds]
 print(f"peak inds: {peak_inds}\npeak data: {peak_vals}")
 
 plt.plot(t*1e9, np.imag(tdstep))
-plt.xlabel("Time")
-plt.ylabel("dB")
+plt.xlabel("Time (ns)")
+plt.ylabel("s11")
 
 plt.show()
