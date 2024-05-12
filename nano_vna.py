@@ -1,8 +1,6 @@
 # import the modules
 import matplotlib.pyplot as plt
 import skrf
-import numpy as np
-from scipy import signal
 from skrf.vi.vna import nanovna
 from skrf.calibration import OnePort
 from nano_vna_funcs import *
@@ -10,12 +8,12 @@ from nano_vna_funcs import *
 c = 3e8 # speed of light [m/s]
 v_f = 1 # velocity factor
 
-COM_Port = getport()[3] # get rid of 'COM' before the com port number
+COM_Port = getport()[3:] # get rid of 'COM' before the com port number
 instr = nanovna.NanoVNA('ASRL'+COM_Port+'::INSTR')
 # Assign frequency range and number of points
-instr.freq_start = 2.4e9
-instr.freq_stop = 2.4e9 + 150e6
-instr.npoints = 1000
+instr.freq_start = 3e9
+instr.freq_stop = 4e9
+instr.npoints = 1024  # max number of points for nanovna
 
 # Calibrate
 input("Please connect a SHORT to port 1 at\nthe reference plane, then press enter:\n")
@@ -40,18 +38,12 @@ s11, _ = instr.get_s11_s21()
 # apply the calibration
 s11_cal = cal.apply_cal(s11)
 
-# plot calibrated s11 in time domain
-f = np.array([(instr.freq_start + i*instr.freq_step) for i in range(instr.npoints)])  # all measurement frequencies
-t, tdstep = measureTDR(s11_cal.s[:,0,0], f, mode='bandpass_impulse')
-plt.plot(t*1e9, np.real(tdstep))
-
-x_data, y_data = ripData()
-peak_inds, _ = signal.find_peaks(y_data, height=-10)
-peak_vals = [y_data[ind] for ind in peak_inds]
-print(f"peak inds: {peak_inds}\npeak data: {peak_vals}")
-
-plt.plot(t*1e9, np.imag(tdstep))
+t, td = plotBandpassTDR(s11_cal)
+plt.plot(t*1e9, td)
 plt.xlabel("Time (ns)")
-plt.ylabel("s11")
+plt.ylabel("|s11|")
+
+peak_inds, peak_vals = findPeaks(td, 0.03)
+print(f"peak inds: {peak_inds}\npeak data: {peak_vals}")
 
 plt.show()
